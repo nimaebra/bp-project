@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Models
-from .models import Practice
+from .models import Practice, Answer
 
-# Register Practive model in admin
-admin.site.register(Practice)
+# Register models in django default admin panel
+admin.site.register([Practice, Answer])
