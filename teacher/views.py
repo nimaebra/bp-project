@@ -1,5 +1,12 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from django.views import View
+from django.urls import reverse
+
+# Decorators
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
 
 # Import Models
 from .models import Practice, Video
@@ -12,6 +19,33 @@ from .forms import CreatePracticeForm
 import datetime
 
 
+class Login(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('dashboard'))
+        else:
+            return render(request, 'login.html')
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('dashboard'))
+        else:
+            data = request.POST
+            user = authenticate(email=data['email'], password=data['password'])
+            if user:
+                login(request, user)
+                return redirect(reverse('dashboard'))
+            else:
+                return render(request, 'login.html', {'error': 'اطلاعات ورود صحیح نمی باشد!'})
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class Dashboard(View):
+    def get(self, request, *args, **kwargs):
+        # practices = Practice.objects.all()
+        return render(request, 'practices.html')
+
+
 class Practices(View):
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
@@ -21,7 +55,6 @@ class Practices(View):
 class PracticesAnswers(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
-        print(practice_id)
         answers = Answer.objects.filter(id=practice_id)
         return render(request, 'answers.html', {'answers': answers})
 

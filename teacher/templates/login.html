@@ -1,0 +1,52 @@
+{% load static %} {% include "layout/header.html" %}
+  <body class="hold-transition login-page">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="../../index2.html"><b>ورود به پنل استاد</b></a>
+      </div>
+      <!-- /.login-logo -->
+      <div class="card">
+        <div class="card-body login-card-body">
+            {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {% endif %}
+          <form method="post">
+          {% csrf_token %}
+            <div class="input-group mb-3">
+              <input required name="email" type="email" class="form-control" placeholder="Email" dir="ltr" />
+              <div class="input-group-append">
+                <span class="fa fa-envelope input-group-text"></span>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                dir="ltr"
+                name="password"
+              />
+              <div class="input-group-append">
+                <span class="fa fa-lock input-group-text"></span>
+              </div>
+            </div>
+            <div class="row">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-block btn-flat"
+                >
+                  ورود
+                </button>
+            </div>
+          </form>
+        </div>
+        <!-- /.login-card-body -->
+      </div>
+    </div>
+    <!-- /.login-box -->
+
+{% include "layout/footer.html" %}
+</body>
+</html>
