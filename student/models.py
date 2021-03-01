@@ -1,6 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from teacher.models import Practice
+
+
+class Student(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    student_number = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
 
 
 class Answer(models.Model):
