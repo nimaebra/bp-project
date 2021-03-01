@@ -12,9 +12,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Practice, Video
 from student.models import Answer
 
-# Import Forms
-from .forms import CreatePracticeForm
-
 # Datetime
 import datetime
 
@@ -43,7 +40,7 @@ class Login(View):
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
         # practices = Practice.objects.all()
-        return render(request, 'practices.html')
+        return render(request, 'dashboard.html')
 
 
 class Practices(View):
@@ -61,7 +58,7 @@ class PracticesAnswers(View):
 
 class PracticeCreate(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'create-practice.html', {'form': CreatePracticeForm()})
+        return render(request, 'create-practice.html')
 
     def post(self, request, *args, **kwargs):
         data = request.POST
@@ -89,3 +86,15 @@ class VideosDetail(View):
         video = Video.objects.get(id=video_id)
         print(video)
         return render(request, 'video/detail.html', {'video': video})
+
+
+class VideoCreate(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'video/create.html')
+
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+        newPractice = Practice(
+            title=data['title'], comment=data['comment'], deadline=datetime.datetime.now())
+        newPractice.save()
+        return redirect('/teachers/practices')
