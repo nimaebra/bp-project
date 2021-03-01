@@ -14,6 +14,7 @@ from student.models import Answer
 
 # Datetime
 import datetime
+import jdatetime
 
 
 class Login(View):
@@ -46,37 +47,41 @@ class Dashboard(View):
 class Practices(View):
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
-        return render(request, 'practices.html', {'practices': practices})
+        for i in range(len(practices)):
+            practices[i].deadline = convert_to_jalali(practices[i].deadline)
+            practices[i].created_at = convert_to_jalali(
+                practices[i].created_at)
+        return render(request, 'practice/index.html', {'practices': practices})
 
 
 class PracticesAnswers(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
         answers = Answer.objects.filter(id=practice_id)
-        return render(request, 'answers.html', {'answers': answers})
+        return render(request, 'practice/answers.html', {'answers': answers})
 
 
 class PracticeCreate(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'create-practice.html')
+        return render(request, 'practice/create.html')
 
     def post(self, request, *args, **kwargs):
         data = request.POST
+        date = list(map(int, data['date'].split("/")))
+        time = list(map(int, data['time'].split(":")))
+        g_datetime = jdatetime.datetime(
+            date[0], date[1], date[2], time[0], time[1]).togregorian()
         newPractice = Practice(
-            title=data['title'], comment=data['comment'], deadline=datetime.datetime.now())
+            title=data['title'], comment=data['comment'], deadline=g_datetime)
         newPractice.save()
-        return redirect('/teachers/practices')
-
-
-class Answers(View):
-    def get(self, request, *args, **kwargs):
-        answers = Answer.objects.all()
-        return render(request, 'answers.html', {'answers': answers})
+        return redirect(reverse('practices-list'))
 
 
 class VideosList(View):
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
+        for i in range(len(videos)):
+            videos[i].created_at = convert_to_jalali(videos[i].created_at)
         return render(request, 'video/index.html', {'videos': videos})
 
 
@@ -84,7 +89,6 @@ class VideosDetail(View):
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
         video = Video.objects.get(id=video_id)
-        print(video)
         return render(request, 'video/detail.html', {'video': video})
 
 
@@ -94,7 +98,18 @@ class VideoCreate(View):
 
     def post(self, request, *args, **kwargs):
         data = request.POST
-        newPractice = Practice(
-            title=data['title'], comment=data['comment'], deadline=datetime.datetime.now())
-        newPractice.save()
-        return redirect('/teachers/practices')
+        video = request.FILES['video']
+        newVideo = Video(
+            title=data['title'], video=video)
+        newVideo.save()
+        return redirect(reverse('videos-list'))
+
+
+'''
+Utils Functions
+'''
+
+
+def convert_to_jalali(datetime):
+    return jdatetime.datetime.fromgregorian(
+        datetime=datetime, locale='fa_IR').strftime("%a، %d %b %Y، %H:%M:%S")

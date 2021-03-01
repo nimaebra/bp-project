@@ -1,96 +1,68 @@
-{% load static %} {% include "layout/header.html" %}
+{% extends "base.html" %} 
 
-<body class="hold-transition sidebar-mini">
-  <div class="wrapper">
-    {% include "layout/sidebar.html" with nav_active_item='video-list' %}
+{% block sidebar %} 
+    {% include "layout/sidebar.html" with nav_active_item="video-list" %}
+{% endblock %} 
 
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
-      <div class="content-header">
-        <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-6">
-              <h1 class="m-0 text-dark">داشبورد</h1>
+{% block breadcrumb %}
+    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد لیست ویدیوها" title="لیست ویدیوها" %}
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">ویدیوها</h3>
+            <div class="card-tools">
+              <button
+                class="btn btn-primary btn-sm"
+                onclick="location.href += '/create'"
+              >
+                <i class="fa fa-plus"></i>
+                اضافه کردن ویدیو
+              </button>
             </div>
-            <!-- /.col -->
-            <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-left">
-                <li class="breadcrumb-item"><a href="#">خانه</a></li>
-                <li class="breadcrumb-item active">ویدیوها</li>
-              </ol>
-            </div>
-            <!-- /.col -->
           </div>
-          <!-- /.row -->
+          <div class="card-body table-responsive p-0">
+            {% if success_created %}
+            <div class="alert alert-success">
+                {{ success_created }}
+            </div>
+            {% endif %}
+            <table class="table table-hover">
+              <tr>
+                <th>شماره</th>
+                <th>عنوان ویدیو</th>
+                <th>زمان آپلود ویدیو</th>
+                <th></th>
+              </tr>
+              {% for video in videos %}
+              <tr>
+                <td>{{ video.id }}</td>
+                <td>{{ video.title }}</td>
+                <td>
+                  <span class="badge badge-danger"
+                    >{{ video.created_at }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ video.id }}'">
+                    <i class="fa fa-film"></i>
+                    مشاهده ویدیو
+                  </button>
+                  <button class="btn btn-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                    حذف ویدیو
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
         </div>
-        <!-- /.container-fluid -->
       </div>
-      <!-- /.content-header -->
-
-      <!-- Main content -->
-      <section class="content">
-        <div class="row">
-            <div class="col-12">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">ویدیوها</h3>
-
-                  <div class="card-tools">
-                    <button
-                      class="btn btn-primary btn-sm"
-                      onclick="location.href += '/create'"
-                    >
-                      <i class="fa fa-plus"></i>
-                      اضافه کردن ویدیو
-                    </button>
-                  </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0">
-                  <table class="table table-hover">
-                    <tr>
-                      <th>شماره</th>
-                      <th>عنوان ویدیو</th>
-                      <th>زمان آپلود ویدیو</th>
-                      <th></th>
-                    </tr>
-                    {% for video in videos %}
-                    <tr>
-                      <td>{{ video.id }}</td>
-                      <td>{{ video.title }}</td>
-                      <td>
-                        <span class="badge badge-danger"
-                          >{{ video.created_at }}
-                        </span>
-                      </td>
-                      <td>
-                        <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ video.id }}'">
-                          <i class="fa fa-film"></i>
-                          مشاهده ویدیو
-                        </button>
-                        <button class="btn btn-danger btn-sm">
-                          <i class="fa fa-trash"></i>
-                          حذف ویدیو
-                        </button>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </table>
-                </div>
-                <!-- /.card-body -->
-              </div>
-              <!-- /.card -->
-            </div>
-          </div>
-          <!-- /.row -->
-      </section>
-      <!-- /.content -->
     </div>
-    <!-- /.content-wrapper -->
-  </div>
-  <!-- ./wrapper -->
-
-  {% include "layout/footer.html" %}
-</body>
-</html>
+</section>
+{% endblock %}

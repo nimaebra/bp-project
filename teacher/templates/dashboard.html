@@ -1,91 +1,61 @@
-{% load static %} {% include "layout/header.html" %}
+{% extends "base.html" %} 
 
-<body class="hold-transition sidebar-mini">
-  <div class="wrapper">
-    {% include "layout/sidebar.html" with nav_active_item="dashboard" %}
+{% block sidebar %} 
+    {% include "layout/sidebar.html" with nav_active_item="dashboard" %} 
+{% endblock %} 
 
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-      <!-- Content Header (Page header) -->
-      <div class="content-header">
-        <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-6">
-              <h1 class="m-0 text-dark">داشبورد</h1>
-            </div>
-            <!-- /.col -->
-            <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-left">
-                <li class="breadcrumb-item"><a href="#">خانه</a></li>
-                <li class="breadcrumb-item active">تمرین ها</li>
-              </ol>
-            </div>
-            <!-- /.col -->
-          </div>
-          <!-- /.row -->
+{% block breadcrumb %}
+    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد" %} 
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="row">
+    <div class="col-md-4 col-sm-6 col-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-info"
+          ><i class="fa fa-envelope-o"></i
+        ></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">تعداد تمرین ها</span>
+          <span class="info-box-number">۱,۴۱۰</span>
         </div>
-        <!-- /.container-fluid -->
+        <!-- /.info-box-content -->
       </div>
-      <!-- /.content-header -->
-
-      <!-- Main content -->
-      <section class="content">
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">تمرین ها</h3>
-
-                <div class="card-tools">
-                  <button class="btn btn-primary btn-sm">
-                    <i class="fa fa-plus"></i>
-                    اضافه کردن تمرین
-                  </button>
-                </div>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body table-responsive p-0">
-                <table class="table table-hover">
-                  <tr>
-                    <th>شماره</th>
-                    <th>شماره دانشجویی</th>
-                    <th>تاریخ آخرین ارسال</th>
-                    <th>نمره</th>
-                    <th>فایل ارسالی</th>
-                  </tr>
-                  {% for answer in answers %}
-                  <tr>
-                    <td>{{ answer.id }}</td>
-                    <td>{{ answer.id }}</td>
-                    <td>{{ answer.updated_at }}</td>
-                    <td>
-                      <span class="badge badge-success"
-                        >{{ answer.score }}
-                      </span>
-                    </td>
-                    <td>
-                      <button class="btn btn-primary btn-sm">
-                        <i class="fa fa-download"></i>
-                        دانلود
-                      </button>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
-        </div>
-        <!-- /.row -->
-      </section>
-      <!-- /.content -->
+      <!-- /.info-box -->
     </div>
-    <!-- /.content-wrapper -->
-  </div>
-  <!-- ./wrapper -->
+    <!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-success"
+          ><i class="fa fa-flag-o"></i
+        ></span>
 
-  {% include "layout/footer.html" %}
-</body>
-</html>
+        <div class="info-box-content">
+          <span class="info-box-text">تعداد ویدیوها</span>
+          <span class="info-box-number">۴۱۰</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-12">
+      <div class="info-box">
+        <span class="info-box-icon bg-danger"
+          ><i class="fa fa-star-o"></i
+        ></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">تعداد دانشجویان</span>
+          <span class="info-box-number">۹۳,۱۳۹</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+  </div>
+</section>
+{% endblock %}
