@@ -1,0 +1,71 @@
+{% extends "base.html" %} 
+
+{% block sidebar %} 
+    {% include "layout/sidebar.html" with nav_active_item="practice-list" %}
+{% endblock %} 
+
+{% block breadcrumb %}
+    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینها" title="تمرین ها" %}
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">تمرین ها</h3>
+          <div class="card-tools">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="location.href += '/create'"
+            >
+              <i class="fa fa-plus"></i>
+              اضافه کردن تمرین
+            </button>
+          </div>
+        </div>
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover">
+            <tr>
+              <th>شماره</th>
+              <th>عنوان</th>
+              <th>توضیحات</th>
+              <th>زمان تحویل</th>
+              <th>تاریخ ایجاد تمرین</th>
+              <th></th>
+            </tr>
+            {% for practice in practices %}
+            <tr>
+              <td>{{ practice.id }}</td>
+              <td>{{ practice.title }}</td>
+              <td>{{ practice.comment }}</td>
+              <td>
+                <span class="badge badge-danger"
+                  >{{ practice.deadline }}
+                </span>
+              </td>
+              <td>
+                <span class="badge badge-success"
+                  >{{ practice.created_at }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ practice.id }}'">
+                  <i class="fa fa-eye"></i>
+                  مشاهده جزئیات
+                </button>
+                <button class="btn btn-danger btn-sm">
+                  <i class="fa fa-trash"></i>
+                  حذف تمرین
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

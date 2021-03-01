@@ -1,0 +1,61 @@
+{% extends "base.html" %} 
+
+{% block sidebar %} 
+    {% include "layout/sidebar.html" with nav_active_item="practices-answers" %}
+{% endblock %} 
+
+{% block breadcrumb %}
+    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد ویدیوجدید" title="ایجاد تمرین جدید" %}
+{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">تمرین ها</h3>
+
+          <div class="card-tools">
+            <button class="btn btn-primary btn-sm">
+              <i class="fa fa-plus"></i>
+              اضافه کردن تمرین
+            </button>
+          </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover">
+            <tr>
+              <th>شماره</th>
+              <th>شماره دانشجویی</th>
+              <th>تاریخ آخرین ارسال</th>
+              <th>نمره</th>
+              <th>فایل ارسالی</th>
+            </tr>
+            {% for answer in answers %}
+            <tr>
+              <td>{{ answer.id }}</td>
+              <td>{{ answer.id }}</td>
+              <td>{{ answer.updated_at }}</td>
+              <td>
+                <span class="badge badge-success"
+                  >{{ answer.score }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-primary btn-sm">
+                  <i class="fa fa-download"></i>
+                  دانلود
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+      

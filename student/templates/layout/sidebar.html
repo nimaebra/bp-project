@@ -1,0 +1,104 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <a href="index3.html" class="brand-link">
+    <span class="brand-text font-weight-light">پنل استاد</span>
+  </a>
+
+  <!-- Sidebar -->
+  <div class="sidebar" style="direction: ltr">
+    <div style="direction: rtl">
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <button type="button" class="btn btn-danger text-center" style="border-radius: 50%"><i class="fa fa-sign-out"></i></button>
+        </div>
+        <div class="info mt-1">
+          <a href="#" class="d-block">{{ user.username }}</a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul
+          class="nav nav-pills nav-sidebar flex-column"
+          data-widget="treeview"
+          role="menu"
+          data-accordion="false"
+        >
+          <li class="nav-item">
+            <a
+              href="{% url 'dashboard' %}"
+              class="nav-link {% if nav_active_item == 'dashboard' %}active{% endif %}"
+            >
+              <i class="nav-icon fa fa-dashboard"></i>
+              <p>داشبورد</p>
+            </a>
+          </li>
+          <li
+            class="nav-item has-treeview {% if nav_active_item == 'practice-list' or nav_active_item == 'practice-create' %}menu-open{% endif %}"
+          >
+            <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-dashboard"></i>
+              <p>
+                تمرین
+                <i class="right fa fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a
+                  href="{% url 'practices-list' %}"
+                  class="nav-link {% if nav_active_item == 'practice-list' %}active{% endif %}"
+                >
+                  <i class="fa fa-list nav-icon"></i>
+                  <p>همه تمرین ها</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  href="{% url 'practice-create' %}"
+                  class="nav-link {% if nav_active_item == 'practice-create' %}active{% endif %}"
+                >
+                  <i class="fa fa-plus nav-icon"></i>
+                  <p>تمرین جدید</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li
+            class="nav-item has-treeview {% if nav_active_item == 'video-list' or nav_active_item == 'video-create' %}menu-open{% endif %}"
+          >
+            <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-film"></i>
+              <p>
+                ویدیو
+                <i class="right fa fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a
+                  href="{% url 'videos-list' %}"
+                  class="nav-link {% if nav_active_item == 'video-list' %}active{% endif %}"
+                >
+                  <i class="fa fa-list nav-icon"></i>
+                  <p>همه ویدیوها</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  href="{% url 'video-create' %}"
+                  class="nav-link {% if nav_active_item == 'video-create' %}active{% endif %}"
+                >
+                  <i class="fa fa-plus nav-icon"></i>
+                  <p>ویدیو جدید</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+  </div>
+  <!-- /.sidebar -->
+</aside>
