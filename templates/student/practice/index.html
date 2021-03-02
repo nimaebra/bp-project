@@ -1,11 +1,11 @@
-{% extends "base.html" %} 
+{% extends "student/base.html" %} 
 
 {% block sidebar %} 
-    {% include "layout/sidebar.html" with nav_active_item="practice-list" %}
+    {% include "student/layout/sidebar.html" with nav_active_item="practice-list" %}
 {% endblock %} 
 
 {% block breadcrumb %}
-    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینها" title="تمرین ها" %}
+    {% include "student/layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینها" title="تمرین ها" %}
 {% endblock %}
 
 {% block content %}
@@ -52,12 +52,8 @@
               </td>
               <td>
                 <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ practice.id }}'">
-                  <i class="fa fa-eye"></i>
-                  مشاهده جزئیات
-                </button>
-                <button class="btn btn-danger btn-sm">
-                  <i class="fa fa-trash"></i>
-                  حذف تمرین
+                  <i class="fa fa-pencil"></i>
+                  ارسال پاسخ
                 </button>
               </td>
             </tr>

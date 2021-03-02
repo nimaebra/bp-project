@@ -14,7 +14,8 @@ class Student(models.Model):
 
 
 class Answer(models.Model):
-    practice = models.ForeignKey(Practice, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, default=1)
+    practice = models.ForeignKey(Practice, on_delete=models.CASCADE, default=1)
     file = models.FileField(upload_to='answers/')
     score = models.FloatField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)

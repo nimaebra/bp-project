@@ -36,6 +36,7 @@ class Teacher(models.Model):
 
 
 class Practice(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     comment = models.CharField(max_length=500)
     deadline = models.DateTimeField(null=False)

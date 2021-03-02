@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
 
-# Import Models
+# Models
 from .models import Practice, Video
 from student.models import Answer
 
