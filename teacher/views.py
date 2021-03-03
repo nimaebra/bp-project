@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 # Decorators
 from django.utils.decorators import method_decorator
@@ -9,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 
 # Models
+from django.contrib.auth.models import User
 from .models import Practice, Video
 from student.models import Answer, Student
 
@@ -16,34 +18,52 @@ from student.models import Answer, Student
 import datetime
 import jdatetime
 
+# Excpetoins
+from django.core.exceptions import ObjectDoesNotExist
+
 
 class Login(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('dashboard'))
+            return redirect(reverse('teacher-dashboard'))
         else:
-            return render(request, 'login.html')
+            return render(request, 'teacher/login.html')
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('dashboard'))
+            return redirect(reverse('teacher-dashboard'))
         else:
             data = request.POST
-            user = authenticate(email=data['email'], password=data['password'])
+            try:
+                username = User.objects.get(email=data['email']).username
+            except ObjectDoesNotExist:
+                return render(request, 'teacher/login.html', {'error': 'اطلاعات وارد شده صحیح نمی باشد!'})
+            user = authenticate(username=username, password=data['password'])
             if user:
                 login(request, user)
-                return redirect(reverse('dashboard'))
+                if 'next' not in request.GET:
+                    return redirect(reverse('teacher-dashboard'))
+                else:
+                    return HttpResponseRedirect(request.GET['next'])
             else:
-                return render(request, 'login.html', {'error': 'اطلاعات ورود صحیح نمی باشد!'})
+                return render(request, 'teacher/login.html', {'error': 'اطلاعات ورود صحیح نمی باشد!'})
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+class Logout(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect(reverse('teacher-login'))
+
+
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
         # practices = Practice.objects.all()
         return render(request, 'teacher/dashboard.html')
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class Practices(View):
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
@@ -54,6 +74,7 @@ class Practices(View):
         return render(request, 'teacher/practice/index.html', {'practices': practices})
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class PracticesAnswers(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
@@ -67,19 +88,35 @@ class PracticesAnswers(View):
         return render(request, 'teacher/practice/answers.html', {'answers': answers, 'practice_title': practice_title})
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class PracticesAnswerDetail(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['practice_id']
         answer_id = kwargs['answer_id']
-        answers = Answer.objects.filter(practice_id=practice_id)
-        for i in range(len(answers)):
-            answers[i].created_at = convert_to_jalali(answers[i].created_at)
-            answers[i].student_number = Student.objects.get(
-                id=answers[i].student_id).student_number
+
+        practice = Practice.objects.get(id=practice_id)
+        answer = Answer.objects.get(id=answer_id)
+        student = Student.objects.get(id=answer.student_id)
+
+        practice.deadline = convert_to_jalali(practice.deadline)
+        answer.created_at = convert_to_jalali(answer.created_at)
+        answer.student = Student.objects.get(id=answer.student_id)
         # print(practice_id, answers)
-        return render(request, 'teacher/practice/answer-detail.html', {'answers': answers})
+        return render(request, 'teacher/practice/answer-detail.html', {'answer': answer, 'practice': practice, 'student': student})
+
+    def post(self, request, *args, **kwargs):
+        data = request.POST
+        practice_id = kwargs['practice_id']
+        answer_id = kwargs['answer_id']
+
+        answer = Answer.objects.get(id=answer_id)
+        answer.score = data['score']
+        answer.save()
+
+        return redirect(reverse('practices-answers', kwargs={'pk': practice_id}))
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class PracticeCreate(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'teacher/practice/create.html')
@@ -96,6 +133,7 @@ class PracticeCreate(View):
         return redirect(reverse('teacher-practices-list'))
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class VideosList(View):
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
@@ -104,6 +142,7 @@ class VideosList(View):
         return render(request, 'teacher/video/index.html', {'videos': videos})
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class VideosDetail(View):
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
@@ -111,6 +150,7 @@ class VideosDetail(View):
         return render(request, 'teacher/video/detail.html', {'video': video})
 
 
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class VideoCreate(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'teacher/video/create.html')

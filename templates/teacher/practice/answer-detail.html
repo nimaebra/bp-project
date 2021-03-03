@@ -1,11 +1,11 @@
 {% extends "teacher/base.html" %} 
 
 {% block sidebar %} 
-    {% include "teacher/layout/sidebar.html" with nav_active_item="practice-create" %}
+    {% include "teacher/layout/sidebar.html" %}
 {% endblock %} 
 
 {% block breadcrumb %}
-    {% include "teacher/layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینجدید" title="ایجاد تمرین جدید" %}
+    {% include "teacher/layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینجدید" title="ثبت نمره تمرین" %}
 {% endblock %}
 
 {% block content %}
@@ -14,14 +14,55 @@
         <div class="col">
         <div class="card card-primary">
             <div class="card-header">
-            <h3 class="card-title">ثبت نمره تمرین</h3>
+            <h3 class="card-title">ثبت نمره تمرین «{{ practice.title }}»</h3>
             </div>
             <form role="form" method="post" enctype="multipart/form">
                 {% csrf_token %}
                 <div class="card-body">
-                    <div class="form-group">
-                        <label for="scoreInput">نمره تمرین</label>
-                        <input name="title" type="text" class="form-control" id="scoreInput" placeholder="نمره تمرین را وارد کنید">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-primary"><i class="fa fa-user"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">نام دانشجو:</span>
+                                    <span class="info-box-number">{{ student.name }}</span>
+                                </div>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">شماره دانشجویی:</span>
+                                    <span class="info-box-number">{{ student.student_number }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-danger"><i class="fa fa-calendar"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">ددلاین تمرین:</span>
+                                    <span class="info-box-number">{{ practice.deadline }}</span>
+                                </div>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">زمان ارسال پاسخ:</span>
+                                    <span class="info-box-number">{{ answer.created_at }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-12">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-info"><i class="fa fa-download"></i></span>
+                                <div class="info-box-content">
+                                <span class="info-box-text">پاسخ ارسال شده:</span>
+                                    <a download href="{{ MEDIA_URL }}{{ answer.file }}">دانلود</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 col-sm-12">
+                            <div class="form-group">
+                                <label for="scoreInput">نمره تمرین</label>
+                                <input name="score" type="number" class="form-control" id="scoreInput" placeholder="نمره تمرین را وارد کنید">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">

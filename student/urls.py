@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import Practices, Dashboard, VideosList, VideosDetail, PracticeAnswer
+from .views import Practices, Dashboard, VideosList, VideosDetail, PracticeAnswer, Login
 
 urlpatterns = [
-    # path('login', Login.as_view(), name='login'),
+    path('login', Login.as_view(), name='student-login'),
     path('dashboard', Dashboard.as_view(), name='dashboard'),
     path('practices', Practices.as_view(), name='practices-list'),
     path('practices/<int:pk>', PracticeAnswer.as_view(),

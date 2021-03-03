@@ -18,7 +18,7 @@ import jdatetime
 from django.core.exceptions import ObjectDoesNotExist
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(login_required(login_url='student-login'), name='dispatch')
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
         data = {
@@ -28,6 +28,7 @@ class Dashboard(View):
         return render(request, 'student/dashboard.html', {'data': data})
 
 
+@method_decorator(login_required(login_url='student-login'), name='dispatch')
 class Practices(View):
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
@@ -50,6 +51,7 @@ class Practices(View):
         return render(request, 'student/practice/index.html', {'practices': practices})
 
 
+@method_decorator(login_required(login_url='student-login'), name='dispatch')
 class PracticeAnswer(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
@@ -71,6 +73,7 @@ class PracticeAnswer(View):
         return redirect(reverse('practices-list'))
 
 
+@method_decorator(login_required(login_url='student-login'), name='dispatch')
 class VideosList(View):
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
@@ -81,6 +84,7 @@ class VideosList(View):
         return render(request, 'student/video/index.html', {'videos': videos})
 
 
+@method_decorator(login_required(login_url='student-login'), name='dispatch')
 class VideosDetail(View):
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
