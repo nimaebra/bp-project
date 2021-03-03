@@ -15,46 +15,60 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">تمرین ها</h3>
-          <div class="card-tools">
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="location.href += '/create'"
-            >
-              <i class="fa fa-plus"></i>
-              اضافه کردن تمرین
-            </button>
-          </div>
         </div>
         <div class="card-body table-responsive p-0">
           <table class="table table-hover">
             <tr>
               <th>شماره</th>
+              <th>نام استاد</th>
               <th>عنوان</th>
               <th>توضیحات</th>
-              <th>زمان تحویل</th>
-              <th>تاریخ ایجاد تمرین</th>
+              <th>وضعیت ارسال پاسخ</th>
+              <th>نمره</th>
+              <th>ددلاین تحویل</th>
+              {% comment %} <th>تاریخ ایجاد تمرین</th> {% endcomment %}
               <th></th>
             </tr>
             {% for practice in practices %}
             <tr>
               <td>{{ practice.id }}</td>
+              <td>{{ practice.teacher_name }}</td>
               <td>{{ practice.title }}</td>
               <td>{{ practice.comment }}</td>
               <td>
+                {% if practice.is_send_answer %}
+                <span class="badge badge-success"
+                  >ارسال شده
+                </span>
+                {% else %}
                 <span class="badge badge-danger"
+                  >ارسال نشده
+                </span>
+                {% endif %}
+              </td>
+              <td>{{ practice.score }}</td>
+              <td>
+                <span class="badge badge-info"
                   >{{ practice.deadline }}
                 </span>
               </td>
-              <td>
+              {% comment %} <td>
                 <span class="badge badge-success"
                   >{{ practice.created_at }}
                 </span>
-              </td>
+              </td> {% endcomment %}
               <td>
+                {% if not practice.is_send_answer %}
                 <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ practice.id }}'">
                   <i class="fa fa-pencil"></i>
                   ارسال پاسخ
                 </button>
+                {% else %}
+                <button class="btn btn-success btn-sm" onclick="location.href += '/{{ practice.id }}'">
+                  <i class="fa fa-eye"></i>
+                  مشاهده پاسخ
+                </button>
+                {% endif %}
               </td>
             </tr>
             {% endfor %}

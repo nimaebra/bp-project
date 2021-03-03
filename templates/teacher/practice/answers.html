@@ -1,11 +1,11 @@
-{% extends "base.html" %} 
+{% extends "teacher/base.html" %} 
 
 {% block sidebar %} 
-    {% include "layout/sidebar.html" with nav_active_item="practices-answers" %}
+    {% include "teacher/layout/sidebar.html" with nav_active_item="practices-answers" %}
 {% endblock %} 
 
 {% block breadcrumb %}
-    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد ویدیوجدید" title="ایجاد تمرین جدید" %}
+    {% include "teacher/layout/breadcrumb.html" with breadcrumb_items="داشبورد پاسختمرینها" title="پاسخ تمرین" %}
 {% endblock %}
 
 {% block content %}
@@ -14,39 +14,44 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">تمرین ها</h3>
-
-          <div class="card-tools">
-            <button class="btn btn-primary btn-sm">
-              <i class="fa fa-plus"></i>
-              اضافه کردن تمرین
-            </button>
-          </div>
+          <h3 class="card-title">پاسخ تمرین «{{ practice_title }}»</h3>
         </div>
-        <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
           <table class="table table-hover">
             <tr>
               <th>شماره</th>
               <th>شماره دانشجویی</th>
-              <th>تاریخ آخرین ارسال</th>
+              <th>نام دانشجو</th>
+              <th>تاریخ ارسال</th>
               <th>نمره</th>
-              <th>فایل ارسالی</th>
+              <th></th>
             </tr>
             {% for answer in answers %}
             <tr>
               <td>{{ answer.id }}</td>
-              <td>{{ answer.id }}</td>
-              <td>{{ answer.updated_at }}</td>
+              <td>{{ answer.student.student_number }}</td>
+              <td>{{ answer.student.name }}</td>
               <td>
-                <span class="badge badge-success"
-                  >{{ answer.score }}
+                <span class="badge badge-info"
+                  >{{ answer.created_at }}
                 </span>
               </td>
               <td>
-                <button class="btn btn-primary btn-sm">
-                  <i class="fa fa-download"></i>
-                  دانلود
+                {% if answer.score == None %}
+                  <span class="badge badge-danger">
+                  داده نشده
+                  </span>
+                {% else %}
+                  <span class="badge badge-primary">
+                    {{ answer.score }}
+                  </span>
+                {% endif %}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ answer.id }}'">
+                  <i class="fa fa-eye"></i>
+                  مشاهده جزئیات
                 </button>
               </td>
             </tr>

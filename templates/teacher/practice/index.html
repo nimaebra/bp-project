@@ -1,11 +1,11 @@
-{% extends "base.html" %} 
+{% extends "teacher/base.html" %} 
 
 {% block sidebar %} 
-    {% include "layout/sidebar.html" with nav_active_item="practice-list" %}
+    {% include "teacher/layout/sidebar.html" with nav_active_item="practice-list" %}
 {% endblock %} 
 
 {% block breadcrumb %}
-    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینها" title="تمرین ها" %}
+    {% include "teacher/layout/breadcrumb.html" with breadcrumb_items="داشبورد تمرینها" title="تمرین ها" %}
 {% endblock %}
 
 {% block content %}
@@ -51,7 +51,7 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ practice.id }}'">
+                <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ practice.id }}/answers'">
                   <i class="fa fa-eye"></i>
                   مشاهده جزئیات
                 </button>

@@ -1,11 +1,11 @@
-{% extends "base.html" %} 
+{% extends "teacher/base.html" %} 
 
 {% block sidebar %} 
-    {% include "layout/sidebar.html" with nav_active_item="videos-detail" %}
+    {% include "teacher/layout/sidebar.html" with nav_active_item="videos-detail" %}
 {% endblock %} 
 
 {% block breadcrumb %}
-    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد ویدیوجدید" title="ایجاد تمرین جدید" %}
+    {% include "teacher/layout/breadcrumb.html" with breadcrumb_items="داشبورد ویدیوجدید" title="ایجاد تمرین جدید" %}
 {% endblock %}
 
 {% block content %}

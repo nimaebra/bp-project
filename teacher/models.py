@@ -36,7 +36,8 @@ class Teacher(models.Model):
 
 
 class Practice(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=200)
     comment = models.CharField(max_length=500)
     deadline = models.DateTimeField(null=False)
@@ -48,6 +49,8 @@ class Practice(models.Model):
 
 
 class Video(models.Model):
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=200)
     video = models.FileField(upload_to='videos/')
     created_at = models.DateTimeField(auto_now_add=True)

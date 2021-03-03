@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 # Models
 from .models import Practice, Video
-from student.models import Answer
+from student.models import Answer, Student
 
 # Datetime
 import datetime
@@ -41,7 +41,7 @@ class Login(View):
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
         # practices = Practice.objects.all()
-        return render(request, 'dashboard.html')
+        return render(request, 'teacher/dashboard.html')
 
 
 class Practices(View):
@@ -51,19 +51,38 @@ class Practices(View):
             practices[i].deadline = convert_to_jalali(practices[i].deadline)
             practices[i].created_at = convert_to_jalali(
                 practices[i].created_at)
-        return render(request, 'practice/index.html', {'practices': practices})
+        return render(request, 'teacher/practice/index.html', {'practices': practices})
 
 
 class PracticesAnswers(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
-        answers = Answer.objects.filter(id=practice_id)
-        return render(request, 'practice/answers.html', {'answers': answers})
+        practice_title = Practice.objects.get(id=practice_id).title
+        answers = Answer.objects.filter(practice_id=practice_id)
+        for i in range(len(answers)):
+            answers[i].created_at = convert_to_jalali(answers[i].created_at)
+            answers[i].student = Student.objects.get(
+                id=answers[i].student_id)
+        # print(practice_id, answers)
+        return render(request, 'teacher/practice/answers.html', {'answers': answers, 'practice_title': practice_title})
+
+
+class PracticesAnswerDetail(View):
+    def get(self, request, *args, **kwargs):
+        practice_id = kwargs['practice_id']
+        answer_id = kwargs['answer_id']
+        answers = Answer.objects.filter(practice_id=practice_id)
+        for i in range(len(answers)):
+            answers[i].created_at = convert_to_jalali(answers[i].created_at)
+            answers[i].student_number = Student.objects.get(
+                id=answers[i].student_id).student_number
+        # print(practice_id, answers)
+        return render(request, 'teacher/practice/answer-detail.html', {'answers': answers})
 
 
 class PracticeCreate(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'practice/create.html')
+        return render(request, 'teacher/practice/create.html')
 
     def post(self, request, *args, **kwargs):
         data = request.POST
@@ -74,7 +93,7 @@ class PracticeCreate(View):
         newPractice = Practice(
             title=data['title'], comment=data['comment'], deadline=g_datetime)
         newPractice.save()
-        return redirect(reverse('practices-list'))
+        return redirect(reverse('teacher-practices-list'))
 
 
 class VideosList(View):
@@ -82,19 +101,19 @@ class VideosList(View):
         videos = Video.objects.all()
         for i in range(len(videos)):
             videos[i].created_at = convert_to_jalali(videos[i].created_at)
-        return render(request, 'video/index.html', {'videos': videos})
+        return render(request, 'teacher/video/index.html', {'videos': videos})
 
 
 class VideosDetail(View):
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
         video = Video.objects.get(id=video_id)
-        return render(request, 'video/detail.html', {'video': video})
+        return render(request, 'teacher/video/detail.html', {'video': video})
 
 
 class VideoCreate(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'video/create.html')
+        return render(request, 'teacher/video/create.html')
 
     def post(self, request, *args, **kwargs):
         data = request.POST

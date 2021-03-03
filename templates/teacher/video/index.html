@@ -1,11 +1,11 @@
-{% extends "base.html" %} 
+{% extends "teacher/base.html" %} 
 
 {% block sidebar %} 
-    {% include "layout/sidebar.html" with nav_active_item="video-list" %}
+    {% include "teacher/layout/sidebar.html" with nav_active_item="video-list" %}
 {% endblock %} 
 
 {% block breadcrumb %}
-    {% include "layout/breadcrumb.html" with breadcrumb_items="داشبورد لیست ویدیوها" title="لیست ویدیوها" %}
+    {% include "teacher/layout/breadcrumb.html" with breadcrumb_items="داشبورد لیست ویدیوها" title="لیست ویدیوها" %}
 {% endblock %}
 
 {% block content %}
