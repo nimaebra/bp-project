@@ -19,23 +19,23 @@
         <div class="card-body table-responsive p-0">
           <table class="table table-hover">
             <tr>
-              <th>شماره</th>
-              <th>نام استاد</th>
-              <th>عنوان</th>
-              <th>توضیحات</th>
-              <th>وضعیت ارسال پاسخ</th>
-              <th>نمره</th>
-              <th>ددلاین تحویل</th>
+              <th class="text-center">شماره</th>
+              <th class="text-center">نام استاد</th>
+              <th class="text-center">عنوان</th>
+              <th class="text-center">توضیحات</th>
+              <th class="text-center">وضعیت ارسال پاسخ</th>
+              <th class="text-center">نمره</th>
+              <th class="text-center">ددلاین تحویل</th>
               {% comment %} <th>تاریخ ایجاد تمرین</th> {% endcomment %}
               <th></th>
             </tr>
             {% for practice in practices %}
             <tr>
-              <td>{{ practice.id }}</td>
-              <td>{{ practice.teacher_name }}</td>
-              <td>{{ practice.title }}</td>
-              <td>{{ practice.comment }}</td>
-              <td>
+              <td class="text-center">{{ practice.id }}</td>
+              <td class="text-center">{{ practice.teacher_name }}</td>
+              <td class="text-center">{{ practice.title }}</td>
+              <td class="text-center">{{ practice.comment }}</td>
+              <td class="text-center">
                 {% if practice.is_send_answer %}
                 <span class="badge badge-success"
                   >ارسال شده
@@ -46,8 +46,16 @@
                 </span>
                 {% endif %}
               </td>
-              <td>{{ practice.score }}</td>
-              <td>
+              <td class="text-center">
+              {% if practice.score == None %}
+                <span class="badge badge-danger"
+                  >ثبت نشده
+                </span>
+              {% else %}
+                {{ practice.score }}
+              {% endif %}
+              </td>
+              <td class="text-center">
                 <span class="badge badge-info"
                   >{{ practice.deadline }}
                 </span>
@@ -57,7 +65,7 @@
                   >{{ practice.created_at }}
                 </span>
               </td> {% endcomment %}
-              <td>
+              <td class="text-center">
                 {% if not practice.is_send_answer %}
                 <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ practice.id }}'">
                   <i class="fa fa-pencil"></i>

@@ -90,30 +90,47 @@ class PracticesAnswers(View):
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
 class PracticesAnswerDetail(View):
-    def get(self, request, *args, **kwargs):
-        practice_id = kwargs['practice_id']
-        answer_id = kwargs['answer_id']
-
+    def get_query(self, practice_id, answer_id):
         practice = Practice.objects.get(id=practice_id)
         answer = Answer.objects.get(id=answer_id)
         student = Student.objects.get(id=answer.student_id)
-
         practice.deadline = convert_to_jalali(practice.deadline)
         answer.created_at = convert_to_jalali(answer.created_at)
         answer.student = Student.objects.get(id=answer.student_id)
-        # print(practice_id, answers)
-        return render(request, 'teacher/practice/answer-detail.html', {'answer': answer, 'practice': practice, 'student': student})
+        return (answer, practice, student)
+
+    def get(self, request, *args, **kwargs):
+        (answer, practice, student) = self.get_query(
+            practice_id=kwargs['practice_id'], answer_id=kwargs['answer_id'])
+        template_data = {
+            'answer': answer,
+            'practice': practice,
+            'student': student
+        }
+        if 'score_error' in kwargs:
+            template_data['score_error'] = kwargs['score_error']
+        return render(request, 'teacher/practice/answer-detail.html', template_data)
 
     def post(self, request, *args, **kwargs):
-        data = request.POST
+        score = request.POST['score']
+        if not self.validate_score(score):
+            kwargs['score_error'] = 'لطفا یک نمره معتبر وارد کنید!'
+            return self.get(request, *args, **kwargs)
         practice_id = kwargs['practice_id']
         answer_id = kwargs['answer_id']
 
         answer = Answer.objects.get(id=answer_id)
-        answer.score = data['score']
+        answer.score = score
         answer.save()
 
         return redirect(reverse('practices-answers', kwargs={'pk': practice_id}))
+
+    def validate_score(self, score):
+        try:
+            val = float(score)
+            return True
+        except ValueError:
+            return False
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
@@ -123,10 +140,14 @@ class PracticeCreate(View):
 
     def post(self, request, *args, **kwargs):
         data = request.POST
-        date = list(map(int, data['date'].split("/")))
-        time = list(map(int, data['time'].split(":")))
-        g_datetime = jdatetime.datetime(
-            date[0], date[1], date[2], time[0], time[1]).togregorian()
+        try:
+            date = list(map(int, data['date'].split("/")))
+            time = list(map(int, data['time'].split(":")))
+            g_datetime = jdatetime.datetime(
+                date[0], date[1], date[2], time[0], time[1]).togregorian()
+            print(g_datetime, jdatetime.datetime.now())
+        except:
+            return self.get(request, *args, **kwargs)
         newPractice = Practice(
             title=data['title'], comment=data['comment'], deadline=g_datetime)
         newPractice.save()
@@ -171,4 +192,4 @@ Utils Functions
 
 def convert_to_jalali(datetime):
     return jdatetime.datetime.fromgregorian(
-        datetime=datetime, locale='fa_IR').strftime("%a، %d %b %Y، %H:%M:%S")
+        datetime=datetime, locale='fa_IR').strftime("%a، %d %b %Y، %H:%M")

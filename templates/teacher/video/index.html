@@ -33,28 +33,24 @@
             {% endif %}
             <table class="table table-hover">
               <tr>
-                <th>شماره</th>
-                <th>عنوان ویدیو</th>
-                <th>زمان آپلود ویدیو</th>
-                <th></th>
+                <th class="text-center">شماره</th>
+                <th class="text-center">عنوان ویدیو</th>
+                <th class="text-center">زمان آپلود ویدیو</th>
+                <th class="text-center"></th>
               </tr>
               {% for video in videos %}
               <tr>
-                <td>{{ video.id }}</td>
-                <td>{{ video.title }}</td>
-                <td>
+                <td class="text-center">{{ video.id }}</td>
+                <td class="text-center">{{ video.title }}</td>
+                <td class="text-center">
                   <span class="badge badge-danger"
                     >{{ video.created_at }}
                   </span>
                 </td>
-                <td>
+                <td class="text-center">
                   <button class="btn btn-warning btn-sm" onclick="location.href += '/{{ video.id }}'">
                     <i class="fa fa-film"></i>
                     مشاهده ویدیو
-                  </button>
-                  <button class="btn btn-danger btn-sm">
-                    <i class="fa fa-trash"></i>
-                    حذف ویدیو
                   </button>
                 </td>
               </tr>

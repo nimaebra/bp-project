@@ -1,12 +1,12 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-  <a href="{% url 'dashboard' %}" class="brand-link">
+  <a href="{% url 'student-dashboard' %}" class="brand-link">
     <span class="brand-text font-weight-light">پنل دانشجو</span>
   </a>
   <div class="sidebar" style="direction: ltr">
     <div style="direction: rtl">
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <button type="button" class="btn btn-danger text-center" style="border-radius: 50%"><i class="fa fa-sign-out"></i></button>
+          <button type="button" class="btn btn-danger text-center" style="border-radius: 50%" onclick="location.href = '{% url 'student-logout' %}'"><i class="fa fa-sign-out"></i></button>
         </div>
         <div class="info mt-1">
           <a href="#" class="d-block">{{ user.username }}</a>
@@ -21,7 +21,7 @@
         >
           <li class="nav-item">
             <a
-              href="{% url 'dashboard' %}"
+              href="{% url 'student-dashboard' %}"
               class="nav-link {% if nav_active_item == 'dashboard' %}active{% endif %}"
             >
               <i class="nav-icon fa fa-dashboard"></i>
