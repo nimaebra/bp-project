@@ -19,14 +19,13 @@ import datetime
 import jdatetime
 
 # Excpetoins
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 
 # Mixins
 from django.contrib.auth.mixins import UserPassesTestMixin
 
-# def group_check(user):
-# if user.groups.filter(name__in=['teacher']):
-#     return PermissionDenied
+# Consts
+TEACHER_GROUP_NAME = 'Teacher'
 
 
 class Login(View):
@@ -57,31 +56,35 @@ class Login(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-class Logout(View):
+class Logout(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         logout(request)
         return redirect(reverse('teacher-login'))
 
 
-# @method_decorator(permission_required('teacher.add_practice', raise_exception=True), name='dispatch')
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(is_student, name='dispatch')
-# @method_decorator(group_required('teacher'))
 class Dashboard(UserPassesTestMixin, View):
     raise_exception = True
 
     def test_func(self):
-        print(self.request.user.groups)
-        return self.request.user.groups.filter(name__in=['Teacher'])
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
     def get(self, request, *args, **kwargs):
-        # practices = Practice.objects.all()
         return render(request, 'teacher/dashboard.html')
 
 
-@ method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class Practices(View):
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+class Practices(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
         for i in range(len(practices)):
@@ -91,9 +94,13 @@ class Practices(View):
         return render(request, 'teacher/practice/index.html', {'practices': practices})
 
 
-@ method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class PracticesAnswers(View):
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+class PracticesAnswers(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
         practice_title = Practice.objects.get(id=practice_id).title
@@ -106,9 +113,13 @@ class PracticesAnswers(View):
         return render(request, 'teacher/practice/answers.html', {'answers': answers, 'practice_title': practice_title})
 
 
-@ method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class PracticesAnswerDetail(View):
+@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+class PracticesAnswerDetail(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get_query(self, practice_id, answer_id):
         practice = Practice.objects.get(id=practice_id)
         answer = Answer.objects.get(id=answer_id)
@@ -153,8 +164,12 @@ class PracticesAnswerDetail(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class PracticeCreate(View):
+class PracticeCreate(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         if 'date_error' in kwargs:
             return render(request, 'teacher/practice/create.html', {'date_error': kwargs['date_error']})
@@ -182,8 +197,12 @@ class PracticeCreate(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class VideosList(View):
+class VideosList(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
         for i in range(len(videos)):
@@ -192,8 +211,12 @@ class VideosList(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class VideosDetail(View):
+class VideosDetail(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
         video = Video.objects.get(id=video_id)
@@ -201,8 +224,12 @@ class VideosDetail(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
-class VideoCreate(View):
+class VideoCreate(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         return render(request, 'teacher/video/create.html')
 

@@ -20,6 +20,12 @@ import jdatetime
 # Excpetoins
 from django.core.exceptions import ObjectDoesNotExist
 
+# Mixins
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+# Consts
+STUDENT_GROUP_NAME = 'Student'
+
 
 class Login(View):
     def get(self, request, *args, **kwargs):
@@ -49,15 +55,24 @@ class Login(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
-class Logout(View):
+class Logout(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=STUDENT_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         logout(request)
         return redirect(reverse('student-login'))
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
-@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
-class Dashboard(View):
+class Dashboard(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=STUDENT_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         data = {
             'practices_count': Practice.objects.all().count(),
@@ -67,8 +82,12 @@ class Dashboard(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
-@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
-class Practices(View):
+class Practices(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=STUDENT_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
         student = Student.objects.get(user_id=request.user.id)
@@ -89,8 +108,12 @@ class Practices(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
-@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
-class PracticeAnswer(View):
+class PracticeAnswer(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=STUDENT_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
         practice = Practice.objects.get(id=practice_id)
@@ -115,8 +138,12 @@ class PracticeAnswer(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
-@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
-class VideosList(View):
+class VideosList(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=STUDENT_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
         for i in range(len(videos)):
@@ -127,8 +154,12 @@ class VideosList(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
-@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
-class VideosDetail(View):
+class VideosDetail(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=STUDENT_GROUP_NAME)
+
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
         video = Video.objects.get(id=video_id)
