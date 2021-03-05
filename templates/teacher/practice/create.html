@@ -14,11 +14,16 @@
         <div class="col">
         <div class="card card-primary">
             <div class="card-header">
-            <h3 class="card-title">ایجاد تمرین جدید</h3>
+              <h3 class="card-title">ایجاد تمرین جدید</h3>
             </div>
             <form role="form" method="post">
             {% csrf_token %}
             <div class="card-body">
+              {% if date_error %}
+                <div class="alert alert-danger">
+                  {{ date_error }}
+                </div>
+              {% endif %}
                 <div class="form-group">
                 <label for="titleInput">عنوان تمرین</label>
                 <input required name="title" type="text" class="form-control" id="titleInput" placeholder="عنوان تمرین را وارد کنید">

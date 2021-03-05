@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 
 # Decorators
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 # Models
 from django.contrib.auth.models import User
@@ -56,6 +56,7 @@ class Logout(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
+@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
         data = {
@@ -66,6 +67,7 @@ class Dashboard(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
+@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
 class Practices(View):
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
@@ -87,6 +89,7 @@ class Practices(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
+@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
 class PracticeAnswer(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
@@ -112,6 +115,7 @@ class PracticeAnswer(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
+@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
 class VideosList(View):
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
@@ -123,6 +127,7 @@ class VideosList(View):
 
 
 @method_decorator(login_required(login_url='student-login'), name='dispatch')
+@method_decorator(permission_required('student', raise_exception=True), name='dispatch')
 class VideosDetail(View):
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']

@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 
 # Decorators
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 
 
 # Models
@@ -19,7 +19,14 @@ import datetime
 import jdatetime
 
 # Excpetoins
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+
+# Mixins
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+# def group_check(user):
+# if user.groups.filter(name__in=['teacher']):
+#     return PermissionDenied
 
 
 class Login(View):
@@ -56,14 +63,24 @@ class Logout(View):
         return redirect(reverse('teacher-login'))
 
 
+# @method_decorator(permission_required('teacher.add_practice', raise_exception=True), name='dispatch')
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
-class Dashboard(View):
+# @method_decorator(is_student, name='dispatch')
+# @method_decorator(group_required('teacher'))
+class Dashboard(UserPassesTestMixin, View):
+    raise_exception = True
+
+    def test_func(self):
+        print(self.request.user.groups)
+        return self.request.user.groups.filter(name__in=['Teacher'])
+
     def get(self, request, *args, **kwargs):
         # practices = Practice.objects.all()
         return render(request, 'teacher/dashboard.html')
 
 
-@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+@ method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class Practices(View):
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
@@ -74,7 +91,8 @@ class Practices(View):
         return render(request, 'teacher/practice/index.html', {'practices': practices})
 
 
-@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+@ method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class PracticesAnswers(View):
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
@@ -88,7 +106,8 @@ class PracticesAnswers(View):
         return render(request, 'teacher/practice/answers.html', {'answers': answers, 'practice_title': practice_title})
 
 
-@method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+@ method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class PracticesAnswerDetail(View):
     def get_query(self, practice_id, answer_id):
         practice = Practice.objects.get(id=practice_id)
@@ -134,8 +153,11 @@ class PracticesAnswerDetail(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class PracticeCreate(View):
     def get(self, request, *args, **kwargs):
+        if 'date_error' in kwargs:
+            return render(request, 'teacher/practice/create.html', {'date_error': kwargs['date_error']})
         return render(request, 'teacher/practice/create.html')
 
     def post(self, request, *args, **kwargs):
@@ -145,8 +167,13 @@ class PracticeCreate(View):
             time = list(map(int, data['time'].split(":")))
             g_datetime = jdatetime.datetime(
                 date[0], date[1], date[2], time[0], time[1]).togregorian()
-            print(g_datetime, jdatetime.datetime.now())
         except:
+            kwargs['date_error'] = 'لطفا یک تاریخ و ساعت معتبر وارد کنید!'
+            return self.get(request, *args, **kwargs)
+        return HttpResponse(datetime.datetime.now(), jdatetime.datetime(
+            date[0], date[1], date[2], time[0], time[1]))
+        if datetime.datetime.now() > datetime.datetime(date[0], date[1], date[2], time[0], time[1]):
+            kwargs['date_error'] = 'تاریخ انتخابی نمی تواند قبل از الان باشد!'
             return self.get(request, *args, **kwargs)
         newPractice = Practice(
             title=data['title'], comment=data['comment'], deadline=g_datetime)
@@ -155,6 +182,7 @@ class PracticeCreate(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class VideosList(View):
     def get(self, request, *args, **kwargs):
         videos = Video.objects.all()
@@ -164,6 +192,7 @@ class VideosList(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class VideosDetail(View):
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
@@ -172,6 +201,7 @@ class VideosDetail(View):
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
+# @method_decorator(permission_required('teacher', raise_exception=True), name='dispatch')
 class VideoCreate(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'teacher/video/create.html')
