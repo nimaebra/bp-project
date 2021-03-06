@@ -231,15 +231,20 @@ class VideoCreate(UserPassesTestMixin, View):
         return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
     def get(self, request, *args, **kwargs):
+        if 'video_error' in kwargs:
+            return render(request, 'teacher/video/create.html', {'video_error': kwargs['video_error']})
         return render(request, 'teacher/video/create.html')
 
     def post(self, request, *args, **kwargs):
         data = request.POST
         video = request.FILES['video']
+        if video.content_type.find('video/') == -1:
+            kwargs['video_error'] = "فرمت فایل انتخابی باید ویدیویی باشد!"
+            return self.get(request, *args, **kwargs)
         newVideo = Video(
             title=data['title'], video=video)
         newVideo.save()
-        return redirect(reverse('videos-list'))
+        return redirect(reverse('teacher-videos-list'))
 
 
 '''
