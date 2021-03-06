@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
@@ -75,7 +76,12 @@ class Dashboard(UserPassesTestMixin, View):
         return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'teacher/dashboard.html')
+        data = {
+            'practices_count': Practice.objects.all().count(),
+            'videos_count': Video.objects.all().count(),
+            'students_count': Student.objects.all().count(),
+        }
+        return render(request, 'teacher/dashboard.html', {'data': data})
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
@@ -185,11 +191,6 @@ class PracticeCreate(UserPassesTestMixin, View):
         except:
             kwargs['date_error'] = 'لطفا یک تاریخ و ساعت معتبر وارد کنید!'
             return self.get(request, *args, **kwargs)
-        return HttpResponse(datetime.datetime.now(), jdatetime.datetime(
-            date[0], date[1], date[2], time[0], time[1]))
-        if datetime.datetime.now() > datetime.datetime(date[0], date[1], date[2], time[0], time[1]):
-            kwargs['date_error'] = 'تاریخ انتخابی نمی تواند قبل از الان باشد!'
-            return self.get(request, *args, **kwargs)
         newPractice = Practice(
             title=data['title'], comment=data['comment'], deadline=g_datetime)
         newPractice.save()
@@ -238,8 +239,12 @@ class VideoCreate(UserPassesTestMixin, View):
     def post(self, request, *args, **kwargs):
         data = request.POST
         video = request.FILES['video']
+        print(video.size)
         if video.content_type.find('video/') == -1:
             kwargs['video_error'] = "فرمت فایل انتخابی باید ویدیویی باشد!"
+            return self.get(request, *args, **kwargs)
+        if video.size > settings.MAX_UPLOAD_SIZE * 1000 * 1000:
+            kwargs['video_error'] = "حجم فایل آپلودی باید حداکثر ۱۰ مگابایت باشد!"
             return self.get(request, *args, **kwargs)
         newVideo = Video(
             title=data['title'], video=video)

@@ -11,7 +11,7 @@
 {% block content %}
 <section class="content">
   <div class="row">
-    <div class="col-md-4 col-sm-6 col-12">
+    <div class="col-md-4 col-sm-4 col-12">
       <div class="info-box">
         <span class="info-box-icon bg-info"
           ><i class="fa fa-envelope-o"></i
@@ -19,43 +19,34 @@
 
         <div class="info-box-content">
           <span class="info-box-text">تعداد تمرین ها</span>
-          <span class="info-box-number">۱,۴۱۰</span>
+          <span class="info-box-number">{{ data.practices_count }}</span>
         </div>
-        <!-- /.info-box-content -->
       </div>
-      <!-- /.info-box -->
     </div>
-    <!-- /.col -->
-    <div class="col-md-4 col-sm-6 col-12">
+    <div class="col-md-4 col-sm-4 col-12">
       <div class="info-box">
         <span class="info-box-icon bg-success"
-          ><i class="fa fa-flag-o"></i
+          ><i class="fa fa-film"></i
         ></span>
 
         <div class="info-box-content">
           <span class="info-box-text">تعداد ویدیوها</span>
-          <span class="info-box-number">۴۱۰</span>
+          <span class="info-box-number">{{ data.videos_count }}</span>
         </div>
-        <!-- /.info-box-content -->
       </div>
-      <!-- /.info-box -->
     </div>
-    <!-- /.col -->
-    <div class="col-md-4 col-sm-6 col-12">
+    <div class="col-md-4 col-sm-4 col-12">
       <div class="info-box">
-        <span class="info-box-icon bg-danger"
-          ><i class="fa fa-star-o"></i
+        <span class="info-box-icon bg-success"
+          ><i class="fa fa-film"></i
         ></span>
 
         <div class="info-box-content">
           <span class="info-box-text">تعداد دانشجویان</span>
-          <span class="info-box-number">۹۳,۱۳۹</span>
+          <span class="info-box-number">{{ data.students_count }}</span>
         </div>
-        <!-- /.info-box-content -->
       </div>
-      <!-- /.info-box -->
     </div>
-    <!-- /.col -->
   </div>
 </section>
 {% endblock %}
