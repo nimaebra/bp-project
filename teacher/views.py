@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.urls import reverse
@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required, permission_required, 
 
 # Models
 from django.contrib.auth.models import User
-from .models import Practice, Video
+from .models import Practice, Video, Teacher
 from student.models import Answer, Student
 
 # Datetime
@@ -20,7 +20,7 @@ import datetime
 import jdatetime
 
 # Excpetoins
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
 # Mixins
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -42,7 +42,8 @@ class Login(View):
         else:
             data = request.POST
             try:
-                username = User.objects.get(email=data['email']).username
+                username = get_object_or_404(
+                    User, email=data['email']).username
             except ObjectDoesNotExist:
                 return render(request, 'teacher/login.html', {'error': 'اطلاعات وارد شده صحیح نمی باشد!'})
             user = authenticate(username=username, password=data['password'])
@@ -76,9 +77,10 @@ class Dashboard(UserPassesTestMixin, View):
         return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
     def get(self, request, *args, **kwargs):
+        teacher_id = get_object_or_404(Teacher, user_id=request.user.id).id
         data = {
-            'practices_count': Practice.objects.all().count(),
-            'videos_count': Video.objects.all().count(),
+            'practices_count': Practice.objects.filter(teacher_id=teacher_id).count(),
+            'videos_count': Video.objects.filter(teacher_id=teacher_id).count(),
             'students_count': Student.objects.all().count(),
         }
         return render(request, 'teacher/dashboard.html', {'data': data})
@@ -92,7 +94,8 @@ class Practices(UserPassesTestMixin, View):
         return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
     def get(self, request, *args, **kwargs):
-        practices = Practice.objects.all()
+        teacher_id = get_object_or_404(Teacher, user_id=request.user.id).id
+        practices = Practice.objects.filter(teacher_id=teacher_id)
         for i in range(len(practices)):
             practices[i].deadline = convert_to_jalali(practices[i].deadline)
             practices[i].created_at = convert_to_jalali(
@@ -109,14 +112,17 @@ class PracticesAnswers(UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
-        practice_title = Practice.objects.get(id=practice_id).title
+        teacher_id = get_object_or_404(Teacher, user_id=request.user.id).id
+        practice = get_object_or_404(Practice, id=practice_id)
+        if practice.teacher_id != teacher_id:
+            raise PermissionDenied()
         answers = Answer.objects.filter(practice_id=practice_id)
         for i in range(len(answers)):
             answers[i].created_at = convert_to_jalali(answers[i].created_at)
-            answers[i].student = Student.objects.get(
-                id=answers[i].student_id)
+            answers[i].student = get_object_or_404(Student,
+                                                   id=answers[i].student_id)
         # print(practice_id, answers)
-        return render(request, 'teacher/practice/answers.html', {'answers': answers, 'practice_title': practice_title})
+        return render(request, 'teacher/practice/answers.html', {'answers': answers, 'practice_title': practice.title})
 
 
 @method_decorator(login_required(login_url='teacher-login'), name='dispatch')
@@ -126,18 +132,20 @@ class PracticesAnswerDetail(UserPassesTestMixin, View):
     def test_func(self):
         return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
-    def get_query(self, practice_id, answer_id):
-        practice = Practice.objects.get(id=practice_id)
-        answer = Answer.objects.get(id=answer_id)
-        student = Student.objects.get(id=answer.student_id)
+    def get_query(self, request, practice_id, answer_id):
+        teacher_id = get_object_or_404(Teacher, user_id=request.user.id).id
+        practice = get_object_or_404(Practice,
+                                     id=practice_id, teacher_id=teacher_id)
+        answer = get_object_or_404(Answer, id=answer_id)
+        student = get_object_or_404(Student, id=answer.student_id)
         practice.deadline = convert_to_jalali(practice.deadline)
         answer.created_at = convert_to_jalali(answer.created_at)
-        answer.student = Student.objects.get(id=answer.student_id)
+        answer.student = get_object_or_404(Student, id=answer.student_id)
         return (answer, practice, student)
 
     def get(self, request, *args, **kwargs):
-        (answer, practice, student) = self.get_query(
-            practice_id=kwargs['practice_id'], answer_id=kwargs['answer_id'])
+        (answer, practice, student) = self.get_query(request,
+                                                     practice_id=kwargs['practice_id'], answer_id=kwargs['answer_id'])
         template_data = {
             'answer': answer,
             'practice': practice,
@@ -155,7 +163,7 @@ class PracticesAnswerDetail(UserPassesTestMixin, View):
         practice_id = kwargs['practice_id']
         answer_id = kwargs['answer_id']
 
-        answer = Answer.objects.get(id=answer_id)
+        answer = get_object_or_404(Answer, id=answer_id)
         answer.score = score
         answer.save()
 
@@ -205,7 +213,8 @@ class VideosList(UserPassesTestMixin, View):
         return self.request.user.groups.filter(name=TEACHER_GROUP_NAME)
 
     def get(self, request, *args, **kwargs):
-        videos = Video.objects.all()
+        teacher_id = get_object_or_404(Teacher, user_id=request.user.id).id
+        videos = Video.objects.filter(teacher_id=teacher_id)
         for i in range(len(videos)):
             videos[i].created_at = convert_to_jalali(videos[i].created_at)
         return render(request, 'teacher/video/index.html', {'videos': videos})
@@ -220,7 +229,8 @@ class VideosDetail(UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
-        video = Video.objects.get(id=video_id)
+        teacher_id = get_object_or_404(Teacher, user_id=request.user.id).id
+        video = get_object_or_404(Video, id=video_id, teacher_id=teacher_id)
         return render(request, 'teacher/video/detail.html', {'video': video})
 
 
