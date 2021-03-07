@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.urls import reverse
@@ -40,7 +40,8 @@ class Login(View):
         else:
             data = request.POST
             try:
-                username = User.objects.get(email=data['email']).username
+                username = get_object_or_404(
+                    User, email=data['email']).username
             except ObjectDoesNotExist:
                 return render(request, 'student/login.html', {'error': 'اطلاعات وارد شده صحیح نمی باشد!'})
             user = authenticate(username=username, password=data['password'])
@@ -90,16 +91,16 @@ class Practices(UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         practices = Practice.objects.all()
-        student = Student.objects.get(user_id=request.user.id)
+        student = get_object_or_404(Student, user_id=request.user.id)
         for i in range(len(practices)):
             practices[i].deadline = convert_to_jalali(practices[i].deadline)
             practices[i].created_at = convert_to_jalali(
                 practices[i].created_at)
-            practices[i].teacher_name = Teacher.objects.get(
-                id=practices[i].teacher_id)
+            practices[i].teacher_name = get_object_or_404(Teacher,
+                                                          id=practices[i].teacher_id)
             try:
-                practices[i].score = Answer.objects.get(
-                    practice_id=practices[i].id, student_id=student.id).score
+                practices[i].score = get_object_or_404(Answer,
+                                                       practice_id=practices[i].id, student_id=student.id).score
                 practices[i].is_send_answer = True
             except ObjectDoesNotExist:
                 practices[i].is_send_answer = False
@@ -116,11 +117,11 @@ class PracticeAnswer(UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
-        practice = Practice.objects.get(id=practice_id)
-        student = Student.objects.get(user_id=request.user.id)
+        practice = get_object_or_404(Practice, id=practice_id)
+        student = get_object_or_404(Student, user_id=request.user.id)
         try:
-            practice.answer = Answer.objects.get(
-                practice_id=practice.id, student_id=student.id).file
+            practice.answer = get_object_or_404(Answer,
+                                                practice_id=practice.id, student_id=student.id).file
             practice.is_send_answer = True
         except ObjectDoesNotExist:
             practice.is_send_answer = False
@@ -129,7 +130,7 @@ class PracticeAnswer(UserPassesTestMixin, View):
 
     def post(self, request, *args, **kwargs):
         practice_id = kwargs['pk']
-        student_id = Student.objects.get(user_id=request.user.id).id
+        student_id = get_object_or_404(Student, user_id=request.user.id).id
         answerFile = request.FILES['answerFile']
         newAnswer = Answer(
             file=answerFile, practice_id=practice_id, student_id=student_id)
@@ -148,8 +149,8 @@ class VideosList(UserPassesTestMixin, View):
         videos = Video.objects.all()
         for i in range(len(videos)):
             videos[i].created_at = convert_to_jalali(videos[i].created_at)
-            videos[i].teacher_name = Teacher.objects.get(
-                id=videos[i].teacher_id)
+            videos[i].teacher_name = get_object_or_404(Teacher,
+                                                       id=videos[i].teacher_id)
         return render(request, 'student/video/index.html', {'videos': videos})
 
 
@@ -162,9 +163,9 @@ class VideosDetail(UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         video_id = kwargs['pk']
-        video = Video.objects.get(id=video_id)
-        video.teacher_name = Teacher.objects.get(
-            id=video.teacher_id)
+        video = get_object_or_404(Video, id=video_id)
+        video.teacher_name = get_object_or_404(Teacher,
+                                               id=video.teacher_id)
         return render(request, 'student/video/detail.html', {'video': video})
 
 

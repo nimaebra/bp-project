@@ -3,6 +3,7 @@ from django.urls import path
 from .views import Practices, PracticesAnswers, PracticeCreate, VideosList, VideosDetail, Login, Dashboard, VideoCreate, PracticesAnswerDetail, Logout
 
 urlpatterns = [
+    path('', Login.as_view(), name='teacher-main'),
     path('login', Login.as_view(), name='teacher-login'),
     path('logout', Logout.as_view(), name='teacher-logout'),
     path('dashboard', Dashboard.as_view(), name='teacher-dashboard'),
