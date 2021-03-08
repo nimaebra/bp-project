@@ -47,10 +47,11 @@ class Login(View):
             user = authenticate(username=username, password=data['password'])
             if user:
                 login(request, user)
-                if 'next' not in request.GET:
-                    return redirect(reverse('student-dashboard'))
-                else:
-                    return HttpResponseRedirect(request.GET['next'])
+                return redirect(reverse('practices-list'))
+                # if 'next' not in request.GET:
+                #     return redirect(reverse('student-dashboard'))
+                # else:
+                #     return HttpResponseRedirect(request.GET['next'])
             else:
                 return render(request, 'teacher/login.html', {'error': 'اطلاعات ورود صحیح نمی باشد!'})
 
